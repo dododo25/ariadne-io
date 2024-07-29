@@ -1,17 +1,25 @@
 import Node from './Node';
 
-const InitialNode = props => {
-  const radius = 32;
-  const borderWidth = 2;
+const radius = 32;
+const borderWidth = 2;
 
-  const view = (
-    <g>
-      <circle cx={radius} cy={radius} r={radius} fill='#212121' />
-      <circle cx={radius} cy={radius} r={radius - borderWidth * 2} fill='#FAFAFA' />
-    </g>
-  );
+class InitialNode extends Node {
 
-  return <Node x={props.x} y={props.y} view={view} />
-};
+  constructor(props) {
+    super(props);
+
+    this.state.width = radius * 2;
+    this.state.height = radius * 2;
+  }
+
+  render() {
+    return (
+      <g ref={this.ref} transform={`translate(${this.state.x}, ${this.state.y})`}>
+        <circle cx={radius} cy={radius} r={radius} fill='#212121' />
+        <circle cx={radius} cy={radius} r={radius - borderWidth * 2} fill='#FAFAFA' />
+      </g>
+    );
+  }
+}
 
 export default InitialNode;

@@ -1,41 +1,46 @@
-import { useState } from 'react';
+import React, { createRef } from 'react';
 
-const Node = props => {
-  const [xPos, setXPos] = useState(props.x ?? 0);
-  const [yPos, setYPos] = useState(props.y ?? 0);
+class Node extends React.Component {
 
-  const [xAnchor, setXAnchor] = useState(0);
-  const [yAnchor, setYAnchor] = useState(0);
+  constructor(props) {
+    super(props);
 
-  const [triggered, setTriggered] = useState(false);
+    this.ref = createRef();
+    this.state = {x: props.x ?? 0, y: props.y ?? 0, xAnchor: 0, yAnchor: 0, triggered: false};
 
-  const onMouseMove = e => {
-    console.log(xAnchor, yAnchor);
-
-    setXPos(e.clientX - xAnchor);
-    setYPos(e.clientY - yAnchor);
-  };
-
-  const onMouseDown = async e => {
-    const rect = e.target.getBoundingClientRect();
-
-    setXAnchor(e.clientX - rect.x);
-    setYAnchor(e.clientY - rect.y);
-    setTriggered(true);
-  };
-
-  if (triggered) {
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', () => window.removeEventListener('mousemove', onMouseMove));
-
-    setTriggered(false);
+    this.onMoveListeners = new Set();
   }
 
-  return (
-    <g transform={`translate(${xPos}, ${yPos})`} onMouseDown={onMouseDown}>
-      {props.view}
-    </g>
-  );
-};
+  addOnMoveListener(listener) {
+    this.onMoveListeners.add(listener);
+  }
+
+  componentDidMount() {
+    const onMouseDown = async e => {
+      const rect = e.target.getBoundingClientRect();
+      this.setState({xAnchor: e.clientX - rect.x, yAnchor: e.clientY - rect.y, triggered: true});
+    };
+
+    this.ref.current.addEventListener('mousedown', onMouseDown);
+  }
+
+  componentDidUpdate() {
+    const onMouseMove = e => {
+      const newXPos = e.clientX - this.state.xAnchor;
+      const newYPos = e.clientY - this.state.yAnchor;
+
+      this.onMoveListeners.forEach(l => l(newXPos, newYPos));
+
+      this.setState({x: newXPos, y: newYPos});
+    };
+
+    if (this.state.triggered) {
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', () => window.removeEventListener('mousemove', onMouseMove));
+
+      this.setState({triggered: false});
+    }
+  }
+}
 
 export default Node;
