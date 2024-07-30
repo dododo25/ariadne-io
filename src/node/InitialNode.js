@@ -10,15 +10,17 @@ class InitialNode extends Node {
 
     this.state.width = radius * 2;
     this.state.height = radius * 2;
-  }
 
-  render() {
-    return (
-      <g ref={this.ref} transform={`translate(${this.state.x}, ${this.state.y})`}>
+    this.view = (
+      <g>
         <circle cx={radius} cy={radius} r={radius} fill='#212121' />
         <circle cx={radius} cy={radius} r={radius - borderWidth * 2} fill='#FAFAFA' />
       </g>
     );
+
+    this.junctionPoints = [
+      {x: radius, y: radius * 2 - borderWidth, type: 'exit'}
+    ];
   }
 }
 

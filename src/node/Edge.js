@@ -1,5 +1,15 @@
 import React from 'react';
 
+const findJunction = (comp, type, branch) => {
+  for (let point of comp.junctionPoints) {
+    if (point.type === type && ((branch && branch === 'none') || point.branch === branch)) {
+      return point;
+    }
+  }
+
+  return undefined;
+}
+
 class Edge extends React.Component {
 
   constructor(props) {
@@ -24,29 +34,20 @@ class Edge extends React.Component {
     const from = this.props.from.current;
     const to = this.props.to.current;
 
-    const fromRect = {
-      x: from.state.x, 
-      y: from.state.y, 
-      width: from.state.width, 
-      height: from.state.height};
-
-    const toRect = {
-      x: to.state.x, 
-      y: to.state.y, 
-      width: to.state.width, 
-      height: to.state.height};
+    const fromJunction = findJunction(from, 'exit', this.props.switchBranch ?? 'none');
+    const toJunction = findJunction(to, 'entry');
 
     from.addOnMoveListener((x, y) => {
-      this.setState({points: [{x: x + fromRect.width / 2, y: y + fromRect.height / 2}, this.state.points[1]]});
+      this.setState({points: [{x: x + fromJunction.x, y: y + fromJunction.y}, this.state.points[1]]});
     });
 
     to.addOnMoveListener((x, y) => {
-      this.setState({points: [this.state.points[0], {x: x + toRect.width / 2, y: y + toRect.height / 2}]});
+      this.setState({points: [this.state.points[0], {x: x + toJunction.x, y: y + toJunction.y}]});
     });
 
     this.setState({points: [
-      {x: fromRect.x + fromRect.width / 2, y: fromRect.y + fromRect.height / 2},
-      {x: toRect.x + toRect.width / 2, y: toRect.y + toRect.height / 2},
+      {x: fromJunction.x, y: fromJunction.y},
+      {x: toJunction.x, y: toJunction.y},
     ]});
   }
 }
