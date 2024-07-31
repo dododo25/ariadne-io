@@ -1,11 +1,12 @@
 import React, { createRef } from 'react';
 
-import Edge from './node/Edge';
-import ExpressionNode from './node/ExpressionNode';
-import HaltingNode from './node/HaltingNode';
-import InitialNode from './node/InitialNode';
-import SwitchNode from './node/SwitchNode';
-import MenuNode from './node/MenuNode';
+import Edge from './graph/Edge';
+import ExpressionNode from './graph/ExpressionNode';
+import HaltingNode from './graph/HaltingNode';
+import InitialNode from './graph/InitialNode';
+import SwitchNode from './graph/SwitchNode';
+import MenuNode from './graph/MenuNode';
+import Variables from './graph/Variables';
 
 class App extends React.Component {
 
@@ -31,8 +32,8 @@ class App extends React.Component {
     const n6 = <HaltingNode ref={r6} />;
 
     return (
-      <div className='overflow-hidden'>
-        <svg width='100vw' height='100vh'>
+      <div className='vw-100 vh-100 d-flex flex-row overflow-hidden'>
+        <svg className='flex-grow-1'>
           <g id='nodes'>
             {n1}
             {n2}
@@ -49,6 +50,9 @@ class App extends React.Component {
             <Edge from={r4} to={r6} switchBranch='false' />
           </g>
         </svg>
+        <div style={{width: '32em'}}>
+          <Variables />
+        </div>
       </div>
     );
   }

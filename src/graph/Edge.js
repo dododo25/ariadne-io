@@ -2,7 +2,7 @@ import React from 'react';
 
 const findJunction = (comp, type, branch) => {
   for (let point of comp.junctionPoints) {
-    if (point.type === type && ((branch && branch === 'none') || point.branch === branch)) {
+    if (point.type === type && (branch === undefined || point.branch === branch)) {
       return point;
     }
   }
@@ -34,7 +34,7 @@ class Edge extends React.Component {
     const from = this.props.from.current;
     const to = this.props.to.current;
 
-    const fromJunction = findJunction(from, 'exit', this.props.switchBranch ?? 'none');
+    const fromJunction = findJunction(from, 'exit', this.props.switchBranch);
     const toJunction = findJunction(to, 'entry');
 
     from.addOnMoveListener((x, y) => {
